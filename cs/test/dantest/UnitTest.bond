@@ -1,0 +1,13 @@
+namespace UnitTest
+
+struct DateAsString
+{
+	0: string timestamp;
+}
+
+struct DanTest
+{
+    1 : required DateAsString date;
+	2 : optional string blah;
+    3 : optional DateAsString optional_date;
+}

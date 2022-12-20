@@ -189,7 +189,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write protocol magic number and version
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVersion()
         {
             output.WriteUInt16(Magic);
@@ -201,7 +201,7 @@ namespace Bond.Protocols
         /// Start writing a struct
         /// </summary>
         /// <param name="metadata">Schema metadata</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteStructBegin(Metadata metadata)
         {
             if (version == 2)
@@ -225,7 +225,7 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a struct
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteStructEnd()
         {
             output.WriteUInt8((Byte)BondDataType.BT_STOP);
@@ -235,7 +235,7 @@ namespace Bond.Protocols
         /// <summary>
         /// End writing a base struct
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBaseEnd()
         {
             output.WriteUInt8((Byte)BondDataType.BT_STOP_BASE);
@@ -247,7 +247,7 @@ namespace Bond.Protocols
         /// <param name="type">Type of the field</param>
         /// <param name="id">Identifier of the field</param>
         /// <param name="metadata">Metadata of the field</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteFieldBegin(BondDataType type, ushort id, Metadata metadata)
         {
             var fieldType = (uint)type;
@@ -273,7 +273,7 @@ namespace Bond.Protocols
         /// <param name="dataType">Type of the field</param>
         /// <param name="id">Identifier of the field</param>
         /// <param name="metadata">Metadata of the field</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         {}
 
@@ -290,7 +290,7 @@ namespace Bond.Protocols
         /// </summary>
         /// <param name="count">Number of elements in the container</param>
         /// <param name="elementType">Type of the elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteContainerBegin(int count, BondDataType elementType)
         {
             if (2 == version && count < 7)
@@ -310,7 +310,7 @@ namespace Bond.Protocols
         /// <param name="count">Number of elements in the container</param>
         /// <param name="keyType">Type of the keys</param>
         /// /// <param name="valueType">Type of the values</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteContainerBegin(int count, BondDataType keyType, BondDataType valueType)
         {
             output.WriteUInt8((byte)keyType);
@@ -328,7 +328,7 @@ namespace Bond.Protocols
         /// <summary>
         /// Write array of bytes verbatim
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBytes(ArraySegment<byte> data)
         {
             output.WriteBytes(data);
@@ -442,7 +442,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(string value)
         {
-            if (value.Length == 0)
+            if (string.IsNullOrEmpty(value))
             {
                 WriteUInt32(0);
             }
@@ -460,7 +460,7 @@ namespace Bond.Protocols
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteWString(string value)
         {
-            if (value.Length == 0)
+            if (string.IsNullOrEmpty(value))
             {
                 WriteUInt32(0);
             }

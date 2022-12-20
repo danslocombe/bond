@@ -44,6 +44,7 @@ module Language.Bond.Codegen.TypeMapping
     , parseNamespaceMapping
       -- * Name builders
     , getTypeName
+    , getOptionalTypeName
     , getInstanceTypeName
     , getElementTypeName
     , getAnnotatedTypeName
@@ -95,6 +96,7 @@ data TypeMapping = TypeMapping
     , instanceMapping :: TypeMapping
     , elementMapping :: TypeMapping
     , annotatedMapping :: TypeMapping
+    , optionalMapping :: TypeMapping
     }
 
 type TypeNameBuilder = Reader MappingContext Builder
@@ -121,6 +123,12 @@ getDeclTypeName c = getQualifiedName c . declQualifiedName c
 -- | Builds the name of a 'Type' in the specified 'MappingContext'.
 getTypeName :: MappingContext -> Type -> Builder
 getTypeName c t = fix' $ runReader (typeName t) c
+  where
+    fix' = fixSyntax $ typeMapping c
+
+-- | Builds the name of a 'Type' in the specified 'MappingContext'.
+getOptionalTypeName :: MappingContext -> Type -> Builder
+getOptionalTypeName c t = fix' $ runReader (optionalTypeName t) c
   where
     fix' = fixSyntax $ typeMapping c
 
@@ -162,6 +170,7 @@ idlTypeMapping = TypeMapping
     idlTypeMapping
     idlTypeMapping
     idlTypeMapping
+    idlTypeMapping
 
 -- | The default C++ type name mapping.
 cppTypeMapping :: TypeMapping
@@ -171,6 +180,7 @@ cppTypeMapping = TypeMapping
     "::"
     cppType
     cppSyntaxFix
+    cppTypeMapping
     cppTypeMapping
     cppTypeMapping
     cppTypeMapping
@@ -186,6 +196,7 @@ cppCustomAllocTypeMapping scoped alloc = TypeMapping
     (cppCustomAllocTypeMapping scoped alloc)
     (cppCustomAllocTypeMapping scoped alloc)
     (cppCustomAllocTypeMapping scoped alloc)
+    (cppCustomAllocTypeMapping scoped alloc)
 
 cppExpandAliasesTypeMapping :: TypeMapping -> TypeMapping
 cppExpandAliasesTypeMapping m = m
@@ -193,6 +204,7 @@ cppExpandAliasesTypeMapping m = m
     , instanceMapping = cppExpandAliasesTypeMapping $ instanceMapping m
     , elementMapping = cppExpandAliasesTypeMapping $ elementMapping m
     , annotatedMapping = cppExpandAliasesTypeMapping $ annotatedMapping m
+    , optionalMapping = cppExpandAliasesTypeMapping $ optionalMapping m
     }
 
 -- | The default C# type name mapping.
@@ -206,6 +218,19 @@ csTypeMapping = TypeMapping
     csTypeMapping
     csTypeMapping
     csAnnotatedTypeMapping
+    csOptionalTypeMapping
+
+csOptionalTypeMapping :: TypeMapping
+csOptionalTypeMapping = TypeMapping
+    (Just Cs)
+    "global::"
+    "."
+    csTypeOptional
+    id
+    csTypeMapping
+    csTypeMapping
+    csAnnotatedTypeMapping
+    csOptionalTypeMapping
 
 -- | C# type name mapping using interfaces rather than concrete types to
 -- represent collections.
@@ -219,6 +244,7 @@ csCollectionInterfacesTypeMapping = TypeMapping
     csCollectionInstancesTypeMapping
     csCollectionInterfacesTypeMapping
     csAnnotatedTypeMapping
+    csOptionalTypeMapping
 
 csCollectionInstancesTypeMapping :: TypeMapping
 csCollectionInstancesTypeMapping = csCollectionInterfacesTypeMapping {mapType = csType}
@@ -233,6 +259,7 @@ csAnnotatedTypeMapping = TypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
     csAnnotatedTypeMapping
+    csOptionalTypeMapping
 
 -- | The default Java type name mapping.
 javaTypeMapping :: TypeMapping
@@ -245,6 +272,7 @@ javaTypeMapping = TypeMapping
     javaTypeMapping
     javaBoxedTypeMapping
     javaTypeMapping
+    javaTypeMapping
 
 -- | Java type mapping that boxes all primitives.
 javaBoxedTypeMapping :: TypeMapping
@@ -256,6 +284,7 @@ javaBoxedTypeMapping = TypeMapping
     id
     javaTypeMapping
     javaBoxedTypeMapping
+    javaTypeMapping
     javaTypeMapping
 
 infixr 6 <<>>
@@ -285,6 +314,12 @@ typeName :: Type -> TypeNameBuilder
 typeName t = do
     m <- asks $ mapType . typeMapping
     m t
+
+optionalTypeName :: Type -> TypeNameBuilder
+optionalTypeName t = do
+    m <- asks $ mapType . (optionalMapping . typeMapping)
+    m t
+
 
 localWith :: (TypeMapping -> TypeMapping) -> TypeNameBuilder -> TypeNameBuilder
 localWith f = local $ \c -> c { typeMapping = f $ typeMapping c }
@@ -499,6 +534,14 @@ csType (BT_Bonded type_) = "global::Bond.IBonded<" <>> typeName type_ <<> ">"
 csType (BT_TypeParam param) = pureText $ paramName param
 csType (BT_UserDefined a@Alias {} args) = aliasTypeName a args
 csType (BT_UserDefined decl args) = declTypeName decl <<>> (angles <$> localWith (const csTypeMapping) (commaSepTypeNames args))
+
+csTypeOptional :: Type -> TypeNameBuilder
+csTypeOptional (BT_TypeParam param) = pureText $ paramName param
+csTypeOptional (BT_TypeParam param) = pureText $ paramName param
+
+csTypeOptional (BT_Maybe element) = typeName element <<> "?"
+csTypeOptional (BT_Nullable element) = typeName element <<> "?"
+csTypeOptional t = csType t <<> "?"
 
 -- C# type mapping with collection interfaces
 csInterfaceType :: Type -> TypeNameBuilder

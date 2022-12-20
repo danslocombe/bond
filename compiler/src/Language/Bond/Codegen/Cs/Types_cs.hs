@@ -49,6 +49,7 @@ types_cs
 types_cs structMapping fieldMapping constructorOptions cs _ _ declarations = (fileSuffix, [lt|
 #{CS.disableCscWarnings}
 #{CS.disableReSharperWarnings}
+#{CS.enableNullability}
 namespace #{csNamespace}
 {
     using System.Collections.Generic;
@@ -61,6 +62,7 @@ namespace #{csNamespace}
 
     -- C# type
     csType = getTypeName cs
+    csTypeOptional = getOptionalTypeName cs
     csNamespace = sepBy "." toText $ getNamespace cs
 
     access = case structMapping of
@@ -180,8 +182,12 @@ namespace #{csNamespace}
 
         -- property or field
         property f@Field {..} =
-            [lt|#{propertyAttributes f}#{new}#{access}#{csType fieldType} #{fieldName}#{autoPropertyOrField}|]
+            [lt|#{propertyAttributes f}#{new}#{access}#{typetype} #{fieldName}#{autoPropertyOrField}|]
           where
+            typetype = case fieldModifier of
+                Required -> csType fieldType
+                _ -> csTypeOptional fieldType
+
             autoPropertyOrField = case fieldMapping of
                 PublicFields        -> [lt|#{optional fieldInitializer $ csDefault f};|]
                 Properties          -> [lt| { get; set; }|]

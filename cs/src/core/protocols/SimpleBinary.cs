@@ -132,7 +132,7 @@ namespace Bond.Protocols
         public void WriteFieldOmitted(BondDataType dataType, ushort id, Metadata metadata)
         {
             // Simple doesn't support omitting fields so instead we write the default value
-            Audit.ArgRule(!metadata.default_value.nothing, "Field set to nothing can't be serialized.");
+            Audit.ArgRule(!metadata.default_value.nothing.Value, "Field set to nothing can't be serialized.");
 
             switch (dataType)
             {
@@ -149,13 +149,13 @@ namespace Bond.Protocols
                     WriteUInt32((UInt32)metadata.default_value.uint_value);
                     break;
                 case BondDataType.BT_UINT64:
-                    WriteUInt64(metadata.default_value.uint_value);
+                    WriteUInt64(metadata.default_value.uint_value.Value);
                     break;
                 case BondDataType.BT_FLOAT:
                     WriteFloat((float)metadata.default_value.double_value);
                     break;
                 case BondDataType.BT_DOUBLE:
-                    WriteDouble(metadata.default_value.double_value);
+                    WriteDouble(metadata.default_value.double_value.Value);
                     break;
                 case BondDataType.BT_STRING:
                     WriteString(metadata.default_value.string_value);
@@ -175,7 +175,7 @@ namespace Bond.Protocols
                     WriteInt32((Int32)metadata.default_value.int_value);
                     break;
                 case BondDataType.BT_INT64:
-                    WriteInt64(metadata.default_value.int_value);
+                    WriteInt64(metadata.default_value.int_value.Value);
                     break;
                 case BondDataType.BT_WSTRING:
                     WriteWString(metadata.default_value.wstring_value);

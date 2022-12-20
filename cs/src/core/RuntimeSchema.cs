@@ -13,10 +13,10 @@ namespace Bond
         public static readonly RuntimeSchema Empty = new RuntimeSchema();
         public SchemaDef SchemaDef { get { return schemaDef; } }
         public TypeDef TypeDef { get { return typeDef; } }
-        public StructDef StructDef { get { return schemaDef.structs[typeDef.struct_def]; } }
+        public StructDef StructDef { get { return schemaDef.structs[typeDef.struct_def.Value]; } }
         public bool HasValue { get { return schemaDef != null && typeDef != null; } }
         public bool IsStruct { get { return HasValue && typeDef.id == BondDataType.BT_STRUCT; } }
-        public bool IsBonded { get { return HasValue && typeDef.bonded_type; } }
+        public bool IsBonded { get { return HasValue && typeDef.bonded_type.Value; } }
         public bool IsBlob { get { return HasValue && typeDef.id == BondDataType.BT_LIST && typeDef.element.id == BondDataType.BT_INT8; } }
         public bool IsContainer { get { return HasValue && typeDef.element != null; } }
         public bool IsMap { get { return HasValue && typeDef.key != null; } }

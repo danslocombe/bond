@@ -11,6 +11,7 @@ module Language.Bond.Codegen.Cs.Util
     , defaultValue
     , disableCscWarnings
     , disableReSharperWarnings
+    , enableNullability
     ) where
 
 import Data.Int (Int64)
@@ -42,6 +43,11 @@ disableReSharperWarnings = [lt|
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantUsingDirective
 #endregion
+|]
+
+enableNullability :: Text
+enableNullability = [lt|
+#nullable enable
 |]
 
 -- C# field/property attributes
@@ -122,6 +128,8 @@ defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
   where
     newInstance t = Just [lt|new #{getInstanceTypeName cs t}()|]
     staticEmptyField t = Just [lt|#{getInstanceTypeName cs t}.Empty|]
+
+    implicitDefault :: Type -> Maybe Text
     implicitDefault (BT_Bonded t) = Just [lt|global::Bond.Bonded<#{getTypeName cs t}>.Empty|]
     implicitDefault t@(BT_TypeParam _) = Just [lt|global::Bond.GenericFactory.Create<#{getInstanceTypeName cs t}>()|]
     implicitDefault t@BT_Blob = newInstance t
@@ -130,8 +138,10 @@ defaultValue cs Field {fieldDefault = Nothing, ..} = implicitDefault fieldType
         | customAliasMapping cs a = newInstance t
         | otherwise = implicitDefault $ resolveAlias a args
     implicitDefault t
-        | isString t = Just [lt|""|]
+        | isString t = Just [lt|string.Empty|]
         | isContainer t || isStruct t = newInstance t
+    implicitDefault t@(BT_Nullable _) = Just [lt|default(#{getTypeName cs t})|]
+    implicitDefault t@(BT_Maybe _) = Just [lt|default(#{getTypeName cs t})|]
     implicitDefault _ = Nothing
 
 defaultValue cs Field {fieldDefault = (Just def), ..} = explicitDefault def

@@ -64,6 +64,7 @@ namespace Bond.Expressions
                         new[] { parser.ReaderParam },
                         Expression.Assign(parser.ReaderParam, Expression.Convert(parser.ReaderValue, parser.ReaderParam.Type)),
                         body);
+                        
                 }
             }
             else
@@ -176,13 +177,13 @@ namespace Bond.Expressions
                 Fields: schema.HasValue ?
                     from field in schema.StructDef.fields
                     select new Field(
-                        Id: field.id,
+                        Id: field.id.Value,
                         Value: (fieldParser, fieldType) => 
                             Expression.Block(
-                                writer.WriteFieldBegin(fieldType, field.id, field.metadata),
+                                writer.WriteFieldBegin(fieldType, field.id.Value, field.metadata),
                                 Value(fieldParser, fieldType, schema.GetFieldSchema(field)),
                                 writer.WriteFieldEnd()),
-                        Omitted: () => writer.WriteFieldOmitted(field.type.id, field.id, field.metadata)) :
+                        Omitted: () => writer.WriteFieldOmitted(field.type.id.Value, field.id.Value, field.metadata)) :
                     null,
                 UnknownField: (fieldParser, fieldType, fieldId) =>
                     Expression.Block(
@@ -339,8 +340,8 @@ namespace Bond.Expressions
             if (schema.IsContainer)
                 return GenerateSerialize(Container, parser, schema);
 
-            return parser.Scalar(valueType, schema.TypeDef.id,
-                value => writer.Write(value, schema.TypeDef.id));
+            return parser.Scalar(valueType, schema.TypeDef.id.Value,
+                value => writer.Write(value, schema.TypeDef.id.Value));
         }
     }
 }

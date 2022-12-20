@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.IO;
     using Bond;
+    using Bond.IO.Safe;
+    using Bond.Protocols;
     using NUnit.Framework;
 
     // Name conflicts with Bond.Tag
@@ -443,6 +445,24 @@
         public void ImmutableCollections()
         {
             TestSerialization<ImmutableCollections.ImmutableCollectionsHolder>();
+        }
+
+        [Test]
+        public void DanTestEmpty()
+        {
+            var instance = new DanTest()
+            {
+                date = null,
+                //optionalnullable = null,
+                //blah = "fwaf",
+                //oops = null,
+            };
+
+            var s = new Serializer<CompactBinaryWriter<OutputBuffer>>(typeof(DanTest));
+            var buffer = new OutputBuffer();
+            var writer = new CompactBinaryWriter<OutputBuffer>(buffer);
+
+            s.Serialize(instance, writer);
         }
 
         void TestTypePromotion<From, To>()

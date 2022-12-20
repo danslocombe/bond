@@ -28,7 +28,7 @@ namespace Bond.Expressions
             omitted = Omitted;
         }
 
-        UInt16 IField.Id
+        ushort IField.Id
         {
             get { return id; }
         }

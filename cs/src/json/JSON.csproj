@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{C001C79F-D289-4CF3-BB59-5F5A72F70D0E}</ProjectGuid>
-    <TargetFrameworks>net45;netstandard1.0;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <RootNamespace>Bond</RootNamespace>
     <AssemblyName>Bond.JSON</AssemblyName>

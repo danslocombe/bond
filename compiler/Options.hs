@@ -59,6 +59,7 @@ data Options
         , structs_enabled :: Bool
         , service_inheritance_enabled :: Bool
         , constructor_parameters :: Bool
+        , nullability :: Bool
         }
     | Java
         { files :: [FilePath]
@@ -109,6 +110,7 @@ cs = Cs
     , fields = def &= name "f" &= help "Generate public fields rather than properties"
     , structs_enabled = True &= explicit &= name "structs" &= help "Generate C# types for Bond structs and enums (true by default, use \"--structs=false\" to disable)"
     , constructor_parameters = def &= explicit &= name "preview-constructor-parameters" &= help "PREVIEW FEATURE: Generate a constructor that takes all the fields as parameters. Typically used with readonly-properties."
+    , nullability = def &= explicit &= name "dan-nullability" &= help "DAN FEATURE: Support nullability analysis for generated classes."
     } &=
     name "c#" &=
     help "Generate C# code"

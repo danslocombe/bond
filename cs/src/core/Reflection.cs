@@ -601,7 +601,7 @@ namespace Bond
                 return 0;
 
             var depth = 0;
-            for (var type = schema.TypeDef; type != null; type = schema.SchemaDef.structs[type.struct_def].base_def)
+            for (var type = schema.TypeDef; type != null; type = schema.SchemaDef.structs[type.struct_def.Value].base_def)
                 depth++;
             return depth;
         }

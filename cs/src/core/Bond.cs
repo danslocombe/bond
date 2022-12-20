@@ -65,7 +65,7 @@ namespace Bond
     {
         public override string ToString()
         {
-            return structs[root.struct_def].ToString();
+            return structs[root.struct_def.Value].ToString();
         }
     }
 
@@ -77,8 +77,8 @@ namespace Bond
         // override which some transforms expect.
         internal static int CalculateHashCode(this TypeDef typeDef)
         {
-            return (typeDef == null) ? 0 : (typeDef.struct_def | ((int)typeDef.id << 16))
-                ^ typeDef.element.CalculateHashCode() ^ typeDef.key.CalculateHashCode();
+            return (int)((typeDef == null) ? 0 : (typeDef.struct_def | ((int)typeDef.id << 16))
+                ^ typeDef.element.CalculateHashCode() ^ typeDef.key.CalculateHashCode());
         }
     }
 

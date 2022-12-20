@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <XapProjectType>TestProject</XapProjectType>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Bond.Net6Tests</RootNamespace>
+    <AssemblyName>Bond.Net6Tests</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget>
+    <QTestType>MsTest_Latest</QTestType>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <PlatformTarget>x64</PlatformTarget>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.SDK" Version="17.4.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <BondCodegen Update="UnitTest.bond">
+      <Options>$(BondOptions) --using="DateTime=System.DateTime"</Options>
+    </BondCodegen>
+  </ItemGroup>
+  <ItemGroup>
+
+    <ProjectReference Include="..\..\src\attributes\Attributes.csproj" />
+    <ProjectReference Include="..\..\src\core\Bond.csproj" />
+    <ProjectReference Include="..\..\src\reflection\reflection.csproj" />
+    <ProjectReference Include="..\..\src\io\IO.csproj" />
+    <ProjectReference Include="..\..\src\json\JSON.csproj" />
+  </ItemGroup>
+    <Import Project="..\..\build\internal\Common.Internal.targets" />
+    <Import Project="..\..\build\internal\Common.Internal.props" />
+    <!--
+    <Import Project="..\..\build\nuget\Bond.Compiler.Csharp.targets" />
+    <Import Project="..\..\build\nuget\Bond.Compiler.Csharp.props" />
+      <Import Project="..\..\build\nuget\Bond.Csharp.targets" />
+      -->
+    <!--<Import Project="..\..\build\nuget\Bond.Csharp.props" /> -->
+</Project>
